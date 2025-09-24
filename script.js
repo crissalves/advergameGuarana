@@ -118,4 +118,17 @@ function gameLoop(currentTime) {
     if (alturaAtual >= 100 && !gameHasEnded) {
         endGame();
     }
+
+    async function setupSom() {
+        try {
+            const response = await fetch('./sound/som-vitoria.mp3');
+            const arrayBuffer = await response.arrayBuffer();
+            somVitoriaBuffer = await globalAudioContext.decodeAudioData(arrayBuffer);
+            console.log("Som de vitória pré-carregado!");
+        } catch (err) {
+            console.error("Erro ao carregar o som:", err);
+        }
+    }
+    // Chamamos a função assim que o script carrega
+    setupSom();
 }

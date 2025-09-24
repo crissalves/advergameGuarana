@@ -10,7 +10,8 @@
 
 /* --- Estilo Base --- */
 body {
-    background-image: url('img/fundo-guarana.jpg');
+    /* CORREÇÃO AQUI */
+    background-image: url('./img/fundo-guarana.jpg');
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
