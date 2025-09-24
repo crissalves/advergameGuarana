@@ -1,93 +1,121 @@
-// Pega os elementos do HTML que vamos usar
+// --- Elementos do Jogo ---
 const startButton = document.getElementById('startButton');
 const liquido = document.getElementById('liquido');
-const resultado = document.getElementById('resultado');
 const volumeDisplay = document.getElementById('volumeDisplay');
+const gameView = document.getElementById('game-view');
+const winView = document.getElementById('resultado');
 
+// --- Variáveis de Controlo ---
 let audioContext;
 let analyser;
 let microphone;
 let gameLoopId;
 let dataArray;
-
-// Variável para controlo de tempo (Delta Time)
 let lastTime = 0;
+let gameHasEnded = false;
+let somVitoriaBuffer = null;
 
-startButton.addEventListener('click', async () => {
-    startButton.style.display = 'none';
+// --- WEB AUDIO API: PRÉ-CARREGAMENTO DO SOM ---
+const globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('O seu navegador não suporta a API de áudio necessária para este jogo.');
-        return;
+async function setupSom() {
+    try {
+        const response = await fetch('sound/som-vitoria.mp3');
+        const arrayBuffer = await response.arrayBuffer();
+        somVitoriaBuffer = await globalAudioContext.decodeAudioData(arrayBuffer);
+        console.log("Som de vitória pré-carregado!");
+    } catch (err) {
+        console.error("Erro ao carregar o som:", err);
+    }
+}
+setupSom();
+
+
+// --- Iniciar Jogo ---
+startButton.addEventListener('click', () => {
+    // --- CORREÇÃO PRINCIPAL AQUI ---
+    // Damos o comando para "acordar" o motor de som, caso ele esteja em modo standby.
+    // Isto é ESSENCIAL para que o microfone funcione.
+    if (globalAudioContext.state === 'suspended') {
+        globalAudioContext.resume();
     }
 
+    startButton.style.display = 'none';
+    setupMicrofone();
+});
+
+async function setupMicrofone() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('O seu navegador não suporta a API de áudio.');
+        startButton.style.display = 'block';
+        return;
+    }
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContext = globalAudioContext;
         analyser = audioContext.createAnalyser();
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
         microphone = audioContext.createMediaStreamSource(stream);
         microphone.connect(analyser);
-
-        // Inicia o loop do jogo
-        lastTime = performance.now(); // Marca o tempo inicial
+        lastTime = performance.now();
         gameLoop();
-
     } catch (err) {
         console.error("Erro ao aceder ao microfone:", err);
         alert('Precisa de permitir o uso do microfone para jogar!');
         startButton.style.display = 'block';
     }
-});
+}
 
+// --- Fim do Jogo ---
+function endGame() {
+    gameHasEnded = true;
+    cancelAnimationFrame(gameLoopId);
+
+    if (microphone) microphone.disconnect();
+
+    if (somVitoriaBuffer) {
+        const source = globalAudioContext.createBufferSource();
+        source.buffer = somVitoriaBuffer;
+        source.connect(globalAudioContext.destination);
+        source.start(0);
+    }
+
+    gameView.classList.remove('visible');
+    gameView.classList.add('hidden');
+    
+    setTimeout(() => {
+        winView.classList.remove('hidden');
+        winView.classList.add('visible');
+    }, 400);
+}
+
+// --- Loop Principal do Jogo (sem alterações) ---
 function gameLoop(currentTime) {
+    if (gameHasEnded) return;
     gameLoopId = requestAnimationFrame(gameLoop);
-
-    // --- CÁLCULO DO DELTA TIME ---
-    // Isto garante que a velocidade do jogo é a mesma em qualquer computador.
-    const deltaTime = (currentTime - lastTime) / 1000; // Tempo em segundos desde o último quadro
+    const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
-
     analyser.getByteFrequencyData(dataArray);
-
     let soma = 0;
-    const tamanhoArray = dataArray.length;
-    for (let i = 0; i < tamanhoArray; i += 8) {
+    for (let i = 0; i < dataArray.length; i += 8) {
         soma += dataArray[i];
     }
-    const volumeMedio = soma / (tamanhoArray / 8);
-
+    const volumeMedio = soma / (dataArray.length / 8);
     volumeDisplay.textContent = Math.round(volumeMedio);
-
-    // --- LÓGICA DE JOGO AJUSTADA E CONTROLADA ---
-
-    const LIMITE_GRITO = 45; // Um pouco mais difícil
+    const LIMITE_GRITO = 45;
     let alturaAtual = parseFloat(liquido.style.height) || 0;
-
-    // A velocidade agora é medida em "percentagem por segundo"
-    const VELOCIDADE_ENCHER = 25; // Enche 25% da barra por segundo de grito
-    const VELOCIDADE_ESVAZIAR = 10; // Esvazia 10% por segundo de silêncio
-
+    const VELOCIDADE_ENCHER = 25;
+    const VELOCIDADE_ESVAZIAR = 10;
     if (volumeMedio > LIMITE_GRITO) {
-        // Multiplicamos a velocidade pelo deltaTime
         alturaAtual += VELOCIDADE_ENCHER * deltaTime;
     } else {
         alturaAtual -= VELOCIDADE_ESVAZIAR * deltaTime;
     }
-
     if (alturaAtual < 0) alturaAtual = 0;
     if (alturaAtual > 100) alturaAtual = 100;
-
     liquido.style.height = alturaAtual + '%';
-
-    if (alturaAtual >= 100) {
-        if (audioContext.state !== 'closed') {
-            audioContext.close();
-            cancelAnimationFrame(gameLoopId);
-        }
-        resultado.classList.remove('hidden');
-        document.getElementById('garrafa-container').style.display = 'none';
-        document.getElementById('debug-info').style.display = 'none';
+    if (alturaAtual >= 100 && !gameHasEnded) {
+        endGame();
     }
 }
