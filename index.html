@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guaraná: O Jogo do Grito!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Grite para encher a garrafa!</h1>
+        
+        <div id="debug-info">
+            Volume Atual: <span id="volumeDisplay">0</span>
+        </div>
+
+        <div id="garrafa-container">
+            <div id="liquido"></div>
+        </div>
+        <button id="startButton">Começar!</button>
+        <div id="resultado" class="hidden">
+            <h2>Parabéns!</h2>
+            <p>Você ganhou um Guaraná! Apresente este QR Code:</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SEU_CUPOM_AQUI" alt="QR Code do Cupom">
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
