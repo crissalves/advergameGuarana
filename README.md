@@ -44,4 +44,4 @@ Se quiser testar ou modificar o projeto no seu computador:
 ## 🎨 Créditos
 
 * **Ideia e Conceito:** Cristian Alves da Silva.
-* **Arte da Vitória (Hornet):** Não consegui identificar o criador da arte! Caso consigo desino os créditos ao mesmo.
+* **Arte da Vitória:** A arte da personagem Hornet (de *Hollow Knight*) foi encontrada na internet. O crédito total pela personagem e pelo seu design pertence aos seus incríveis criadores, a **Team Cherry**. Se você é o criador desta arte específica, por favor, entre em contato para que os devidos créditos sejam adicionados!
