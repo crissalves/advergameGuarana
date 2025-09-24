@@ -10,8 +10,7 @@
 
 /* --- Estilo Base --- */
 body {
-    /* CORREÇÃO AQUI */
-    background-image: url('./img/fundo-guarana.jpg');
+    background-image: url('img/fundo-guarana.jpg'); /* Caminho corrigido */
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
@@ -42,7 +41,7 @@ body {
     min-height: 600px;
 }
 
-/* O sistema de camadas agora é controlado por opacity para uma transição suave */
+/* O sistema de camadas é controlado por opacity para uma transição suave */
 #game-view, #resultado {
     width: 100%;
     display: flex;
@@ -60,12 +59,11 @@ body {
 .hidden {
     opacity: 0;
     pointer-events: none;
-    /* Usamos position absolute SÓ quando está escondido para não afetar o layout */
-    position: absolute;
+    position: absolute; /* Usamos position absolute SÓ quando está escondido para não afetar o layout */
 }
 
 
-/* --- Estilos dos elementos internos (sem grandes alterações) --- */
+/* --- Estilos dos elementos internos --- */
 h1 { font-weight: 900; font-size: 2.2em; color: var(--cor-vermelho-fruta); text-shadow: 3px 3px 0px var(--cor-sombra); margin-top: 0; margin-bottom: 20px; line-height: 1.1; }
 #debug-info { background-color: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px; margin-bottom: 20px; width: fit-content; font-size: 0.9em; }
 #garrafa-container { width: 150px; height: 300px; border: 5px solid #bbbbbb; box-shadow: inset 0 0 15px var(--cor-sombra); border-radius: 25px 25px 5px 5px; margin-bottom: 25px; position: relative; background: linear-gradient(to top, #bbbbbb 5%, rgba(255,255,255,0.1) 5%, rgba(255,255,255,0.1) 95%, #bbbbbb 95%); overflow: hidden; }

@@ -20,7 +20,7 @@ const globalAudioContext = new (window.AudioContext || window.webkitAudioContext
 
 async function setupSom() {
     try {
-        const response = await fetch('sound/som-vitoria.mp3');
+        const response = await fetch('sound/som-vitoria.mp3'); // Caminho corrigido
         const arrayBuffer = await response.arrayBuffer();
         somVitoriaBuffer = await globalAudioContext.decodeAudioData(arrayBuffer);
         console.log("Som de vitória pré-carregado!");
@@ -33,9 +33,6 @@ setupSom();
 
 // --- Iniciar Jogo ---
 startButton.addEventListener('click', () => {
-    // --- CORREÇÃO PRINCIPAL AQUI ---
-    // Damos o comando para "acordar" o motor de som, caso ele esteja em modo standby.
-    // Isto é ESSENCIAL para que o microfone funcione.
     if (globalAudioContext.state === 'suspended') {
         globalAudioContext.resume();
     }
@@ -90,7 +87,7 @@ function endGame() {
     }, 400);
 }
 
-// --- Loop Principal do Jogo (sem alterações) ---
+// --- Loop Principal do Jogo ---
 function gameLoop(currentTime) {
     if (gameHasEnded) return;
     gameLoopId = requestAnimationFrame(gameLoop);
@@ -118,17 +115,4 @@ function gameLoop(currentTime) {
     if (alturaAtual >= 100 && !gameHasEnded) {
         endGame();
     }
-
-    async function setupSom() {
-        try {
-            const response = await fetch('./sound/som-vitoria.mp3');
-            const arrayBuffer = await response.arrayBuffer();
-            somVitoriaBuffer = await globalAudioContext.decodeAudioData(arrayBuffer);
-            console.log("Som de vitória pré-carregado!");
-        } catch (err) {
-            console.error("Erro ao carregar o som:", err);
-        }
-    }
-    // Chamamos a função assim que o script carrega
-    setupSom();
 }

@@ -9,7 +9,7 @@ Este projeto foi desenvolvido como um protótipo de advergame onde os jogadores 
 
 ## 🎮 Como Jogar
 
-1.  **Abra o jogo:** Aceda ao link do projeto.
+1.  **Abra o jogo:** Clique no link do projeto.
 2.  **Dê permissão:** O navegador irá pedir permissão para usar o seu microfone. Clique em "Permitir".
 3.  **Comece o Desafio:** Clique em "COMEÇAR!".
 4.  **GRITE!** Use a sua voz para encher a garrafa de energia no centro do ecrã. A barra esvazia-se lentamente, por isso mantenha a energia!
