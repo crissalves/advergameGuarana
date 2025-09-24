@@ -1,11 +1,11 @@
-// --- Elementos do Jogo ---
+// Elementos do DOM
 const startButton = document.getElementById('startButton');
 const liquido = document.getElementById('liquido');
 const volumeDisplay = document.getElementById('volumeDisplay');
 const gameView = document.getElementById('game-view');
 const winView = document.getElementById('resultado');
 
-// --- Variáveis de Controlo ---
+// Variáveis de Controlo do Jogo
 let audioContext;
 let analyser;
 let microphone;
@@ -15,15 +15,16 @@ let lastTime = 0;
 let gameHasEnded = false;
 let somVitoriaBuffer = null;
 
-// --- WEB AUDIO API: PRÉ-CARREGAMENTO DO SOM ---
+// --- Web Audio API: Pré-carregamento do som para performance ---
 const globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+// Esta função busca e descodifica o ficheiro de áudio assim que a página carrega.
+// Isto evita o "soluço" na hora da vitória.
 async function setupSom() {
     try {
-        const response = await fetch('sound/som-vitoria.mp3'); // Caminho corrigido
+        const response = await fetch('sound/som-vitoria.mp3');
         const arrayBuffer = await response.arrayBuffer();
         somVitoriaBuffer = await globalAudioContext.decodeAudioData(arrayBuffer);
-        console.log("Som de vitória pré-carregado!");
     } catch (err) {
         console.error("Erro ao carregar o som:", err);
     }
@@ -31,8 +32,9 @@ async function setupSom() {
 setupSom();
 
 
-// --- Iniciar Jogo ---
+// --- Lógica de Início do Jogo ---
 startButton.addEventListener('click', () => {
+    // É essencial "acordar" o AudioContext após uma interação do utilizador.
     if (globalAudioContext.state === 'suspended') {
         globalAudioContext.resume();
     }
@@ -64,13 +66,14 @@ async function setupMicrofone() {
     }
 }
 
-// --- Fim do Jogo ---
+// --- Lógica de Fim de Jogo ---
 function endGame() {
     gameHasEnded = true;
     cancelAnimationFrame(gameLoopId);
 
     if (microphone) microphone.disconnect();
 
+    // Toca o som que já está na memória (operação muito rápida).
     if (somVitoriaBuffer) {
         const source = globalAudioContext.createBufferSource();
         source.buffer = somVitoriaBuffer;
@@ -78,40 +81,54 @@ function endGame() {
         source.start(0);
     }
 
+    // Orquestra a animação de transição entre os ecrãs.
     gameView.classList.remove('visible');
     gameView.classList.add('hidden');
     
     setTimeout(() => {
         winView.classList.remove('hidden');
         winView.classList.add('visible');
-    }, 400);
+    }, 400); // Este tempo deve corresponder à duração da transição no CSS.
 }
 
 // --- Loop Principal do Jogo ---
 function gameLoop(currentTime) {
     if (gameHasEnded) return;
+
     gameLoopId = requestAnimationFrame(gameLoop);
+
+    // O cálculo de DeltaTime garante que a velocidade do jogo seja a mesma em qualquer computador.
     const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
+
     analyser.getByteFrequencyData(dataArray);
+
     let soma = 0;
+    // Otimização: verificamos apenas alguns pontos do array de frequência para medir o volume.
     for (let i = 0; i < dataArray.length; i += 8) {
         soma += dataArray[i];
     }
     const volumeMedio = soma / (dataArray.length / 8);
     volumeDisplay.textContent = Math.round(volumeMedio);
+
+    // Parâmetros de dificuldade do jogo
     const LIMITE_GRITO = 45;
+    const VELOCIDADE_ENCHER = 25; // percentagem por segundo
+    const VELOCIDADE_ESVAZIAR = 10; // percentagem por segundo
+    
     let alturaAtual = parseFloat(liquido.style.height) || 0;
-    const VELOCIDADE_ENCHER = 25;
-    const VELOCIDADE_ESVAZIAR = 10;
+
     if (volumeMedio > LIMITE_GRITO) {
         alturaAtual += VELOCIDADE_ENCHER * deltaTime;
     } else {
         alturaAtual -= VELOCIDADE_ESVAZIAR * deltaTime;
     }
+
     if (alturaAtual < 0) alturaAtual = 0;
     if (alturaAtual > 100) alturaAtual = 100;
     liquido.style.height = alturaAtual + '%';
+
+    // Condição de vitória, verifica a flag para acontecer apenas uma vez.
     if (alturaAtual >= 100 && !gameHasEnded) {
         endGame();
     }

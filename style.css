@@ -1,4 +1,4 @@
-/* --- Paleta de Cores e Fonte --- */
+/* --- :root e @import --- */
 :root {
     --cor-verde-principal: #008149;
     --cor-vermelho-fruta: #c20f1e;
@@ -8,9 +8,9 @@
 }
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap');
 
-/* --- Estilo Base --- */
+/* --- Estilos Gerais --- */
 body {
-    background-image: url('img/fundo-guarana.jpg'); /* Caminho corrigido */
+    background-image: url('img/fundo-guarana.jpg');
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
@@ -38,10 +38,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 600px;
+    max-height: 95vh; /* Garante que o container nunca seja maior que a altura do ecrã */
+    overflow-y: auto; /* Adiciona scroll INTERNO se o conteúdo for muito alto */
 }
 
-/* O sistema de camadas é controlado por opacity para uma transição suave */
+/* --- Sistema de Camadas para a Transição de Ecrãs --- */
 #game-view, #resultado {
     width: 100%;
     display: flex;
@@ -51,7 +52,7 @@ body {
     transition: opacity 0.4s ease-in-out;
 }
 
-/* Classes para controlar a visibilidade */
+/* Classes de controlo de visibilidade para as camadas */
 .visible {
     opacity: 1;
     pointer-events: all;
@@ -59,16 +60,50 @@ body {
 .hidden {
     opacity: 0;
     pointer-events: none;
-    position: absolute; /* Usamos position absolute SÓ quando está escondido para não afetar o layout */
+    position: absolute; /* Usado SÓ quando escondido para não afetar o layout */
 }
 
-
-/* --- Estilos dos elementos internos --- */
+/* --- Elementos do Jogo --- */
 h1 { font-weight: 900; font-size: 2.2em; color: var(--cor-vermelho-fruta); text-shadow: 3px 3px 0px var(--cor-sombra); margin-top: 0; margin-bottom: 20px; line-height: 1.1; }
 #debug-info { background-color: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 5px; margin-bottom: 20px; width: fit-content; font-size: 0.9em; }
 #garrafa-container { width: 150px; height: 300px; border: 5px solid #bbbbbb; box-shadow: inset 0 0 15px var(--cor-sombra); border-radius: 25px 25px 5px 5px; margin-bottom: 25px; position: relative; background: linear-gradient(to top, #bbbbbb 5%, rgba(255,255,255,0.1) 5%, rgba(255,255,255,0.1) 95%, #bbbbbb 95%); overflow: hidden; }
 #liquido { background: linear-gradient(to top, #6b2b0a, #a54a23); width: 100%; height: 0%; position: absolute; bottom: 0; transition: height 0.2s linear; }
 #startButton { background-color: var(--cor-vermelho-fruta); border: none; padding: 15px 40px; font-size: 1.5em; font-weight: 900; color: var(--cor-branco); border-radius: 50px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 15px var(--cor-sombra); }
+
+/* --- Ecrã de Vitória --- */
 #resultado h2 { font-size: 2.5em; color: var(--cor-laranja); text-transform: uppercase; margin-bottom: 10px; text-shadow: 3px 3px 0px var(--cor-sombra); }
 #hornet-vitoria { max-width: 250px; margin: 20px auto; display: block; filter: drop-shadow(0 0 15px var(--cor-laranja)); }
 .qrcode { margin-top: 15px; border: 5px solid var(--cor-laranja); border-radius: 10px; }
+
+
+/* --- Responsividade para Dispositivos Móveis --- */
+/* Estes estilos só são aplicados se a largura do ecrã for 480px ou menos */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px; /* Reduz o espaçamento interno */
+        width: 95%;   /* Ocupa quase toda a largura */
+    }
+
+    h1 {
+        font-size: 1.6em; /* Diminui o tamanho do título */
+    }
+
+    #garrafa-container {
+        width: 120px;      /* Garrafa mais fina */
+        height: 240px;     /* Garrafa mais baixa */
+        margin-bottom: 20px;
+    }
+
+    #startButton {
+        font-size: 1.2em;      /* Botão um pouco menor */
+        padding: 12px 30px;
+    }
+
+    #hornet-vitoria {
+        max-width: 180px; /* Imagem da vitória menor */
+    }
+
+    #resultado h2 {
+        font-size: 2em; /* Texto "VITÓRIA!" menor */
+    }
+}
