@@ -48,5 +48,5 @@ Se quiser testar ou modificar o projeto no seu computador:
 
 ## 🎨 Créditos
 
-* **Ideia e Conceito:** [Seu Nome ou Nickname aqui]
-* **Arte da Vitória (Hornet):** Arte personalizada criada pelo autor do projeto.
+* **Ideia e Conceito:** Cristian Alves da Silva.
+* **Arte da Vitória (Hornet):** Não consegui identificar o criador da arte! Caso consigo desino os créditos ao mesmo.
