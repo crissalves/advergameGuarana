@@ -18,8 +18,6 @@ let somVitoriaBuffer = null;
 // --- Web Audio API: Pré-carregamento do som para performance ---
 const globalAudioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-// Esta função busca e descodifica o ficheiro de áudio assim que a página carrega.
-// Isto evita o "soluço" na hora da vitória.
 async function setupSom() {
     try {
         const response = await fetch('sound/som-vitoria.mp3');
@@ -34,7 +32,6 @@ setupSom();
 
 // --- Lógica de Início do Jogo ---
 startButton.addEventListener('click', () => {
-    // É essencial "acordar" o AudioContext após uma interação do utilizador.
     if (globalAudioContext.state === 'suspended') {
         globalAudioContext.resume();
     }
@@ -73,7 +70,6 @@ function endGame() {
 
     if (microphone) microphone.disconnect();
 
-    // Toca o som que já está na memória (operação muito rápida).
     if (somVitoriaBuffer) {
         const source = globalAudioContext.createBufferSource();
         source.buffer = somVitoriaBuffer;
@@ -81,14 +77,13 @@ function endGame() {
         source.start(0);
     }
 
-    // Orquestra a animação de transição entre os ecrãs.
     gameView.classList.remove('visible');
     gameView.classList.add('hidden');
     
     setTimeout(() => {
         winView.classList.remove('hidden');
         winView.classList.add('visible');
-    }, 400); // Este tempo deve corresponder à duração da transição no CSS.
+    }, 400);
 }
 
 // --- Loop Principal do Jogo ---
@@ -97,24 +92,21 @@ function gameLoop(currentTime) {
 
     gameLoopId = requestAnimationFrame(gameLoop);
 
-    // O cálculo de DeltaTime garante que a velocidade do jogo seja a mesma em qualquer computador.
     const deltaTime = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
 
     analyser.getByteFrequencyData(dataArray);
 
     let soma = 0;
-    // Otimização: verificamos apenas alguns pontos do array de frequência para medir o volume.
     for (let i = 0; i < dataArray.length; i += 8) {
         soma += dataArray[i];
     }
     const volumeMedio = soma / (dataArray.length / 8);
     volumeDisplay.textContent = Math.round(volumeMedio);
 
-    // Parâmetros de dificuldade do jogo
     const LIMITE_GRITO = 45;
-    const VELOCIDADE_ENCHER = 25; // percentagem por segundo
-    const VELOCIDADE_ESVAZIAR = 10; // percentagem por segundo
+    const VELOCIDADE_ENCHER = 25; 
+    const VELOCIDADE_ESVAZIAR = 10; 
     
     let alturaAtual = parseFloat(liquido.style.height) || 0;
 
@@ -128,7 +120,6 @@ function gameLoop(currentTime) {
     if (alturaAtual > 100) alturaAtual = 100;
     liquido.style.height = alturaAtual + '%';
 
-    // Condição de vitória, verifica a flag para acontecer apenas uma vez.
     if (alturaAtual >= 100 && !gameHasEnded) {
         endGame();
     }

@@ -38,8 +38,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    max-height: 95vh; /* Garante que o container nunca seja maior que a altura do ecrã */
-    overflow-y: auto; /* Adiciona scroll INTERNO se o conteúdo for muito alto */
+    max-height: 95vh; 
+    overflow-y: auto; 
 }
 
 /* --- Sistema de Camadas para a Transição de Ecrãs --- */
@@ -52,7 +52,7 @@ body {
     transition: opacity 0.4s ease-in-out;
 }
 
-/* Classes de controlo de visibilidade para as camadas */
+/* Classes de controle de visibilidade para as camadas */
 .visible {
     opacity: 1;
     pointer-events: all;
@@ -60,7 +60,7 @@ body {
 .hidden {
     opacity: 0;
     pointer-events: none;
-    position: absolute; /* Usado SÓ quando escondido para não afetar o layout */
+    position: absolute; 
 }
 
 /* --- Elementos do Jogo --- */
@@ -77,33 +77,35 @@ h1 { font-weight: 900; font-size: 2.2em; color: var(--cor-vermelho-fruta); text-
 
 
 /* --- Responsividade para Dispositivos Móveis --- */
-/* Estes estilos só são aplicados se a largura do ecrã for 480px ou menos */
-@media (max-width: 480px) {
+@media (max-height: 670px) {
     .container {
-        padding: 20px; /* Reduz o espaçamento interno */
-        width: 95%;   /* Ocupa quase toda a largura */
+        padding: 15px;
     }
-
     h1 {
-        font-size: 1.6em; /* Diminui o tamanho do título */
+        font-size: 1.5em; /* Diminui ainda mais o título */
+        margin-bottom: 10px;
     }
-
+    #debug-info {
+        margin-bottom: 10px;
+        transform: scale(0.9); 
+    }
     #garrafa-container {
-        width: 120px;      /* Garrafa mais fina */
-        height: 240px;     /* Garrafa mais baixa */
-        margin-bottom: 20px;
+        height: 180px;
+        width: 100px;
+        margin-bottom: 15px;
     }
-
     #startButton {
-        font-size: 1.2em;      /* Botão um pouco menor */
-        padding: 12px 30px;
+        font-size: 1.1em;
+        padding: 10px 25px;
     }
-
     #hornet-vitoria {
-        max-width: 180px; /* Imagem da vitória menor */
+        max-width: 150px;
     }
-
-    #resultado h2 {
-        font-size: 2em; /* Texto "VITÓRIA!" menor */
+    #resultado p {
+        margin: 10px 0;
+    }
+    .qrcode {
+        margin-top: 10px;
+        transform: scale(0.9);
     }
 }
